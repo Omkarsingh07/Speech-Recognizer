@@ -1,0 +1,11 @@
+pandas
+matplotlib
+seaborn
+librosa
+IPython
+keras
+scikit-learn
+tensorflow
+streamlit
+streamlit_option_menu
+streamlit_webrtc
