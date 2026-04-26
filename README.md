@@ -38,7 +38,7 @@ A web application that uses deep learning to detect emotions from speech audio f
 - Shivam Verma
 - Suman Kumar
 - Deepak
-- Aadarsh
+- omkar
 
 ## License
 
