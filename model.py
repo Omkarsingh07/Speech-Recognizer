@@ -1,9 +1,11 @@
+import os
+os.environ["KERAS_BACKEND"] = "torch"
 import numpy as np
 import librosa
-import tensorflow as tf
+import keras
 
 # Load your trained model
-model = tf.keras.models.load_model('best_model.keras')  # Ensure the path is correct
+model = keras.models.load_model('best_model.keras')  # Ensure the path is correct
 
 def load_audio(file):
     """Load an audio file using librosa."""

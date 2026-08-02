@@ -33,12 +33,9 @@ A web application that uses deep learning to detect emotions from speech audio f
 2. Upload an audio file (.wav or .mp3)
 3. The model will analyze the audio and predict the emotion
 
-## Team
+## Build By
 
-- Shivam Verma
-- Suman Kumar
-- Deepak
-- omkar
+- Omkar Singh
 
 ## License
 
