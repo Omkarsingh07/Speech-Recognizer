@@ -501,19 +501,24 @@ if not model_loaded:
 # ---------------------------------------------------------
 left_col, right_col = st.columns([1.2, 0.8], gap="large")
 
+SUPPORTED_AUDIO_TYPES = [
+    "wav", "mp3", "m4a", "aac", "ogg", "opus", "flac", "wma",
+    "amr", "3gp", "webm", "aiff", "aif", "au"
+]
+
 # ── LEFT: Audio Input Card ──────────────────────────────
 with left_col:
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">Audio Input</div>', unsafe_allow_html=True)
     st.markdown(
         '<p class="card-desc">Drop an audio file to detect its emotional content. '
-        'Supports <strong style="color:var(--text-muted)">WAV · MP3 · OGG</strong>.</p>',
+        'Supports <strong style="color:var(--text-muted)">WAV · MP3 · M4A · AAC · OGG · OPUS · FLAC · 3GP · WEBM</strong> and more.</p>',
         unsafe_allow_html=True
     )
 
     uploaded_file = st.file_uploader(
         "Upload audio file",
-        type=["wav", "mp3", "ogg"],
+        type=SUPPORTED_AUDIO_TYPES,
         label_visibility="collapsed"
     )
 
@@ -560,23 +565,32 @@ with left_col:
 if analyze_clicked and selected_file and model_loaded:
     with st.spinner("Running inference…"):
         t0 = time.time()
-        audio_data, sr = librosa.load(selected_file, sr=16000)
-        processed = preprocess_audio(audio_data, orig_sr=16000)
-        probs = model.predict(processed, verbose=0)[0]
-        latency = round((time.time() - t0) * 1000, 1)
+        try:
+            if hasattr(selected_file, "seek"):
+                selected_file.seek(0)
+            audio_data, sr = librosa.load(selected_file, sr=16000)
+            audio_decoded_successfully = True
+        except Exception as decode_err:
+            audio_decoded_successfully = False
+            st.error("⚠️ Unable to decode the uploaded audio file. Please ensure the file is a valid, uncorrupted audio recording.")
 
-        top_idx = int(np.argmax(probs))
-        top_emotion = emotion_mapping.get(top_idx, f"Class {top_idx}")
-        top_conf = round(float(probs[top_idx]) * 100, 1)
-        duration = round(len(audio_data) / 16000, 2)
+        if audio_decoded_successfully:
+            processed = preprocess_audio(audio_data, orig_sr=16000)
+            probs = model.predict(processed, verbose=0)[0]
+            latency = round((time.time() - t0) * 1000, 1)
 
-        st.session_state.prediction_data = {
-            "top_emotion": top_emotion,
-            "top_conf":    top_conf,
-            "probs":       probs,
-            "latency":     latency,
-            "duration":    duration,
-        }
+            top_idx = int(np.argmax(probs))
+            top_emotion = emotion_mapping.get(top_idx, f"Class {top_idx}")
+            top_conf = round(float(probs[top_idx]) * 100, 1)
+            duration = round(len(audio_data) / 16000, 2)
+
+            st.session_state.prediction_data = {
+                "top_emotion": top_emotion,
+                "top_conf":    top_conf,
+                "probs":       probs,
+                "latency":     latency,
+                "duration":    duration,
+            }
 
 # ── RIGHT: Prediction Card ──────────────────────────────
 with right_col:
