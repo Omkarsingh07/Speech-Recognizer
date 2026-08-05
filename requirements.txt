@@ -1,7 +1,8 @@
 # Production-Ready Streamlit Community Cloud Dependencies
 # Uses PyTorch backend for Keras 3 (KERAS_BACKEND=torch)
 
-streamlit>=1.30.0
+streamlit>=1.40.0
+starlette==0.38.6
 torch>=2.0.0
 keras>=3.0.0
 librosa>=0.10.0
